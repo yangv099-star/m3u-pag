@@ -112,4 +112,77 @@ async function loadFiles() {
     try {
 
         const url =
-            `https://api.github.com/repos/${owner}/${repo}/
+            `https://api.github.com/repos/${owner}/${repo}/contents/?ref=${branch}`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("GitHub API 请求失败");
+        }
+
+        const data = await response.json();
+
+        files = data.filter(file =>
+            file.type === "file" &&
+            file.name.toLowerCase().endsWith(".m3u")
+        );
+
+        render(files);
+
+    } catch (error) {
+
+        list.innerHTML =
+            `<div class="empty">
+                无法读取仓库文件<br>
+                请检查仓库是否为公开仓库
+            </div>`;
+
+        count.textContent = "读取失败";
+    }
+}
+
+function render(data) {
+
+    count.textContent = `共 ${data.length} 个 M3U 文件`;
+
+    if (data.length === 0) {
+        list.innerHTML =
+            `<div class="empty">没有找到 M3U 文件</div>`;
+        return;
+    }
+
+    list.innerHTML = data.map(file => `
+        <div class="item">
+            <div class="icon">📄</div>
+            <div class="name">${escapeHtml(file.name)}</div>
+        </div>
+    `).join("");
+}
+
+function escapeHtml(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+search.addEventListener("input", () => {
+
+    const keyword =
+        search.value.toLowerCase().trim();
+
+    const result = files.filter(file =>
+        file.name.toLowerCase().includes(keyword)
+    );
+
+    render(result);
+});
+
+loadFiles();
+
+</script>
+
+</body>
+</html>
