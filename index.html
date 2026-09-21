@@ -1,1 +1,115 @@
-/ Commit changes
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3U 资源</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f5f6f8;
+    font-family: Arial, sans-serif;
+    color: #222;
+}
+
+.header {
+    background: white;
+    padding: 22px 18px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid #eee;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.sub {
+    margin-top: 6px;
+    color: #888;
+    font-size: 14px;
+}
+
+.search {
+    margin-top: 15px;
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+.list {
+    padding: 12px;
+}
+
+.item {
+    background: white;
+    padding: 17px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+
+.icon {
+    font-size: 25px;
+    margin-right: 13px;
+}
+
+.name {
+    font-size: 16px;
+    word-break: break-all;
+}
+
+.empty {
+    text-align: center;
+    color: #999;
+    padding: 60px 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="title">M3U 资源</div>
+    <div class="sub" id="count">正在读取……</div>
+    <input
+        class="search"
+        id="search"
+        placeholder="搜索 M3U 文件"
+    >
+</div>
+
+<div class="list" id="list">
+    <div class="empty">正在读取仓库文件……</div>
+</div>
+
+<script>
+
+const owner = "yangv099-star";
+const repo = "m3u-pag";
+const branch = "main";
+
+const list = document.getElementById("list");
+const count = document.getElementById("count");
+const search = document.getElementById("search");
+
+let files = [];
+
+async function loadFiles() {
+
+    try {
+
+        const url =
+            `https://api.github.com/repos/${owner}/${repo}/
